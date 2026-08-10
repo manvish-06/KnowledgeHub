@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}KnowledgeHub{% endblock %}
+    </title>
+
+    <meta name="description" content="KnowledgeHub - Search, Learn and Share Knowledge">
+    <meta name="theme-color" content="#0B1120">
+
+    <link rel="icon" href="{% static 'encyclopedia/favicon.ico' %}">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'encyclopedia/css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- ==========================================
+     Reading Progress
+========================================== -->
+<div id="reading-progress"></div>
+
+<!-- ==========================================
+     Navbar
+========================================== -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">
+            <i class="bi bi-book-half"></i>
+            <span>KnowledgeHub</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left Navigation -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'search' %}">
+                        <i class="bi bi-search"></i> Search
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'random_page' %}">
+                        <i class="bi bi-shuffle"></i> Random
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create' %}">
+                        <i class="bi bi-plus-circle"></i> Create
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <!-- Search -->
+            <form class="d-flex me-lg-3 my-3 my-lg-0" action="{% url 'search' %}" method="get">
+                <input type="search" name="q" class="form-control search-navbar" placeholder="Search articles..."
+                    autocomplete="off">
+            </form>
+
+            <!-- Theme -->
+            <button id="themeToggle" class="btn btn-outline-light me-2">
+                <i class="bi bi-moon-stars"></i>
+            </button>
+
+            <!-- User Navigation -->
+            {% if user.is_authenticated %}
+            <div class="dropdown">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-person-circle me-2"></i> {{ user.username }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                    <li>
+                        <h6 class="dropdown-header">Welcome, <strong>{{ user.username }}</strong></h6>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'dashboard' %}">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'create' %}">
+                            <i class="bi bi-plus-circle me-2"></i> Create Article
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'author_profile' user.username %}">
+                            <i class="bi bi-person me-2"></i> My Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'search' %}">
+                            <i class="bi bi-search me-2"></i> Search
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'login' %}" class="btn btn-outline-light">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Login
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-primary">
+                    <i class="bi bi-person-plus me-2"></i> Register
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- ==========================================
+     Main Content
+========================================== -->
+<main class="main-content">
+
+    <!-- FIXED: Django Messages & Bootstrap Alignment -->
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <!-- Maps Django's 'error' tag to Bootstrap's 'danger' class -->
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm border-0 border-start border-4 {% if message.tags == 'error' %}border-danger{% else %}border-{{ message.tags }}{% endif %}" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'warning' %}bi-exclamation-triangle-fill text-warning{% elif message.tags == 'error' %}bi-x-octagon-fill text-danger{% else %}bi-info-circle-fill text-info{% endif %} me-3 fs-5"></i>
+                        <div>
+                            {{ message }}
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block body %}
+    {% endblock %}
+
+</main>
+
+<!-- ==========================================
+     Footer
+========================================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-5">
+                <h4><i class="bi bi-book-half me-2"></i> KnowledgeHub</h4>
+                <p>A modern platform for learning, writing, and sharing knowledge with the community.</p>
+            </div>
+            <div class="col-lg-3">
+                <h5>Explore</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'search' %}">Search</a></li>
+                    <li><a href="{% url 'random_page' %}">Random Article</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <h5>Quote</h5>
+                <p class="mb-1"><em>"Knowledge grows when it is shared."</em></p>
+                <small>© 2026 KnowledgeHub</small>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ==========================================
+     Scroll To Top Button
+========================================== -->
+<button id="scrollTopBtn" class="scroll-top-btn" type="button" aria-label="Scroll to top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- ==========================================
+     Bootstrap JavaScript
+========================================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ==========================================
+     Main JavaScript
+========================================== -->
+<script src="{% static 'encyclopedia/js/script.js' %}"></script>
+
+<!-- ==========================================
+     Page Specific JavaScript
+========================================== -->
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>
+
+

@@ -1,0 +1,253 @@
+{% extends "encyclopedia/base.html" %} {% block title %} Create Article |
+KnowledgeHub {% endblock %} {% block body %}
+
+<section class="section py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-11">
+        <div class="card shadow-custom article-editor-card">
+          <div class="card-header text-center py-5">
+            <div class="editor-icon mb-3">
+              <i class="bi bi-journal-richtext"></i>
+            </div>
+
+            <h1 class="fw-bold mb-3">Create New Article</h1>
+
+            <p class="text-muted mb-0">
+              Share your knowledge with the KnowledgeHub community.
+            </p>
+          </div>
+
+          <div class="card-body p-5">
+            {% if form.errors %}
+
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+              Please correct the errors below.
+            </div>
+
+            {% endif %}
+
+            <form method="POST">
+              {% csrf_token %}
+
+              <!-- ========================= -->
+              <!-- Title -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-4">
+                <label class="form-label fw-semibold">
+                  {{ form.title.label }}
+                </label>
+
+                {{ form.title }} {% if form.title.errors %}
+
+                <div class="text-danger mt-2">{{ form.title.errors }}</div>
+
+                {% endif %}
+              </div>
+
+              <!-- ========================= -->
+              <!-- Summary -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-4">
+                <label class="form-label fw-semibold">
+                  {{ form.summary.label }}
+                </label>
+
+                {{ form.summary }}
+
+                <div class="form-text">
+                  Write a short summary that appears before the article.
+                </div>
+
+                {% if form.summary.errors %}
+
+                <div class="text-danger mt-2">{{ form.summary.errors }}</div>
+
+                {% endif %}
+              </div>
+
+              <!-- ========================= -->
+              <!-- Content -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold">
+                  {{ form.content.label }}
+                </label>
+
+                {{ form.content }}
+
+                <div class="editor-footer mt-3">
+                  <div>
+                    <small>
+                      <i class="bi bi-markdown me-1"></i>
+
+                      Markdown supported
+                    </small>
+                  </div>
+
+                  <div class="editor-stats">
+                    <small id="wordCounter"> 0 words </small>
+
+                    <small id="readingTime"> 0 min read </small>
+
+                    <small id="editorCounter"> 0 / 1000 </small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Categories -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Categories </label>
+
+                <div class="chip-container">
+                  {% for checkbox in form.categories %}
+
+                  <label class="chip">
+                    {{ checkbox.tag }}
+
+                    <span> {{ checkbox.choice_label }} </span>
+                  </label>
+
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <label class="form-label fw-semibold">
+                  Create New Categories
+                </label>
+
+                {{ form.new_categories }}
+
+                <div class="form-text">
+                  Separate multiple categories using commas.
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Tags -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Tags </label>
+
+                <div class="chip-container">
+                  {% for checkbox in form.tags %}
+
+                  <label class="chip">
+                    {{ checkbox.tag }}
+
+                    <span> {{ checkbox.choice_label }} </span>
+                  </label>
+
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <label class="form-label fw-semibold"> Create New Tags </label>
+
+                {{ form.new_tags }}
+
+                <div class="form-text">
+                  Separate multiple tags using commas.
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Featured Article -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Featured Article </label>
+
+                <div class="featured-card">
+                  <div class="featured-left">
+                    <div class="featured-icon">
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+
+                    <div>
+                      <h6 class="mb-1">Feature this article</h6>
+
+                      <small class="text-muted">
+                        Featured articles appear first on the homepage.
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="featured-right">{{ form.featured }}</div>
+                </div>
+              </div>
+
+              <hr class="my-5" />
+
+              <div
+                class="d-flex justify-content-between align-items-center flex-wrap gap-3"
+              >
+                <a
+                  href="{% url 'index' %}"
+                  class="btn btn-outline-light px-4 py-2"
+                >
+                  <i class="bi bi-arrow-left me-2"></i>
+
+                  Cancel
+                </a>
+
+                <button type="submit" class="btn btn-primary px-5 py-2">
+                  <i class="bi bi-send-fill me-2"></i>
+
+                  Publish Article
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const textarea = document.querySelector("#id_content");
+
+    const counter = document.getElementById("editorCounter");
+
+    const wordCounter = document.getElementById("wordCounter");
+
+    const reading = document.getElementById("readingTime");
+
+    if (!textarea) return;
+
+    function updateStats() {
+      const text = textarea.value;
+
+      const chars = text.length;
+
+      const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
+
+      const mins = Math.max(1, Math.ceil(words / 200));
+
+      if (counter) counter.textContent = `${chars} characters`;
+
+      if (wordCounter) wordCounter.textContent = `${words} words`;
+
+      if (reading) reading.textContent = `${mins} min read`;
+    }
+
+    textarea.addEventListener("input", updateStats);
+
+    updateStats();
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,770 @@
+:root {
+  --ai-bg-main: #0b1120;
+  --ai-bg-card: #151b23;
+  --ai-bg-panel: #0d1117;
+
+  --ai-border: #30363d;
+  --ai-border-hover: #3f4d5d;
+
+  --ai-primary: #20C7B7;
+  --ai-primary-hover: #159E92;
+
+  --ai-success: #238636;
+
+  --ai-text: #c9d1d9;
+  --ai-muted: #8b949e;
+
+  --radius: 16px;
+}
+
+body {
+  background: var(--ai-bg-main);
+}
+
+/* ==========================================================
+   Workspace
+========================================================== */
+
+.ai-workspace-container {
+  max-width: 1600px;
+
+  width: 95%;
+
+  margin: auto;
+
+  padding-bottom: 80px;
+}
+
+/* ==========================================================
+   Feature Grid
+========================================================== */
+
+#ai-features-container {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+
+  gap: 28px;
+
+  align-items: stretch;
+}
+
+/* Expanded cards become full width */
+
+.ai-card.is-expanded {
+  grid-column: 1/-1;
+}
+
+/* ==========================================================
+   Card
+========================================================== */
+
+.ai-card {
+  background: var(--ai-bg-card);
+
+  border: 1px solid var(--ai-border);
+
+  border-radius: var(--radius);
+
+  overflow: hidden;
+
+  min-height: 92px;
+
+  height: 100%;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.25s,
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+
+.ai-card:hover {
+  border-color: var(--ai-border-hover);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 0 0 3px rgba(32, 199, 183, 0.15);
+}
+
+.ai-card:focus-within {
+  border-color: var(--ai-primary);
+
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.15);
+}
+
+/* ==========================================================
+   Header
+========================================================== */
+
+.ai-card-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 22px 28px;
+
+  min-height: 92px;
+  box-sizing: border-box;
+
+  background: var(--ai-bg-card);
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.ai-card-header:hover {
+  background: #181f29;
+}
+
+.ai-card-title-group {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.ai-card-title {
+  margin: 0;
+
+  font-size: 1.2rem;
+
+  font-weight: 700;
+
+  color: white;
+}
+
+.collapse-icon {
+  color: var(--ai-muted);
+
+  transition: 0.3s;
+}
+
+.ai-card.is-expanded .collapse-icon {
+  transform: rotate(180deg);
+}
+
+/* ==========================================================
+   Right Controls
+========================================================== */
+
+.action-wrapper {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+/* ==========================================================
+   Difficulty Dropdown
+========================================================== */
+
+.ai-difficulty-select {
+  background: var(--ai-bg-panel);
+
+  color: var(--ai-text);
+
+  border: 1px solid var(--ai-border);
+
+  border-radius: 10px;
+
+  min-width: 170px;
+
+  padding: 10px 16px;
+
+  transition: 0.25s;
+}
+
+.ai-difficulty-select:hover {
+  border-color: var(--ai-primary);
+}
+
+.ai-difficulty-select:focus {
+  background: var(--ai-bg-panel);
+
+  color: white;
+
+  border-color: var(--ai-primary);
+
+  box-shadow: none;
+}
+
+/* ==========================================================
+   Generate Button
+========================================================== */
+
+.btn-ai {
+  background: var(--ai-primary);
+
+  color: white;
+
+  border: none;
+
+  border-radius: 999px;
+
+  padding: 11px 28px;
+
+  font-weight: 600;
+
+  transition: 0.25s;
+
+  min-width: 135px;
+}
+
+.btn-ai:hover {
+  background: var(--ai-primary-hover);
+
+  transform: translateY(-1px);
+}
+
+.btn-ai:disabled {
+  background: #3a4450;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.btn-ai.btn-success-state {
+  background: var(--ai-success);
+}
+
+/* ==========================================================
+   Body
+========================================================== */
+
+.ai-card-body {
+  display: none;
+
+  background: var(--ai-bg-panel);
+
+  border-top: 1px solid var(--ai-border);
+
+  padding: 34px;
+
+  animation: fadeIn 0.35s ease;
+}
+
+.ai-card.is-expanded .ai-card-body {
+  display: block;
+}
+
+/* ==========================================================
+   Loading
+========================================================== */
+
+.state-loading {
+  padding: 60px 0;
+
+  text-align: center;
+}
+
+.state-loading .spinner-border {
+  width: 48px;
+
+  height: 48px;
+}
+
+/* ==========================================================
+   Error
+========================================================== */
+
+.state-error .alert {
+  border-radius: 12px;
+}
+
+/* ==========================================================
+   Generated Header
+========================================================== */
+
+.ai-result-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: var(--ai-primary);
+
+  font-weight: 600;
+
+  margin-bottom: 26px;
+}
+
+/* ==========================================================
+   Animations
+========================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: none;
+  }
+}
+
+/* ==========================================================
+   Mobile
+========================================================== */
+
+@media (max-width: 1200px) {
+  #ai-features-container {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-card.is-expanded {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-workspace-container {
+    width: 100%;
+
+    padding-inline: 12px;
+  }
+
+  .ai-card-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    height: auto;
+    min-height: 92px;
+  }
+
+  .action-wrapper {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .ai-difficulty-select {
+    min-width: 150px;
+  }
+
+  .btn-ai {
+    padding: 10px 22px;
+  }
+
+  .ai-card-body {
+    padding: 22px;
+  }
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.ai-output-text {
+  color: var(--ai-text);
+
+  font-size: 1.08rem;
+
+  line-height: 1.85;
+
+  max-width: 1200px;
+
+  margin: auto;
+
+  word-wrap: break-word;
+}
+
+/* ==========================================================
+   Headings
+========================================================== */
+
+.ai-output-text h1 {
+  font-size: 2rem;
+
+  color: #fff;
+
+  margin: 2rem 0 1rem;
+
+  font-weight: 700;
+}
+
+.ai-output-text h2 {
+  font-size: 1.6rem;
+
+  color: #fff;
+
+  margin: 1.8rem 0 0.9rem;
+
+  font-weight: 700;
+}
+
+.ai-output-text h3 {
+  font-size: 1.35rem;
+
+  color: #fff;
+
+  margin: 1.6rem 0 0.8rem;
+
+  font-weight: 600;
+}
+
+.ai-output-text h4 {
+  font-size: 1.15rem;
+
+  color: #fff;
+
+  margin: 1.3rem 0 0.6rem;
+
+  font-weight: 600;
+}
+
+/* ==========================================================
+   Paragraphs
+========================================================== */
+
+.ai-output-text p {
+  margin-bottom: 1.35rem;
+}
+
+/* ==========================================================
+   Lists
+========================================================== */
+
+.ai-output-text ul,
+.ai-output-text ol {
+  margin-bottom: 1.5rem;
+
+  padding-left: 1.7rem;
+}
+
+.ai-output-text li {
+  margin-bottom: 0.6rem;
+}
+
+/* ==========================================================
+   Strong / Italic
+========================================================== */
+
+.ai-output-text strong {
+  color: white;
+
+  font-weight: 700;
+}
+
+.ai-output-text em {
+  color: var(--ai-secondary, #6EDDD2);
+}
+
+/* ==========================================================
+   Inline Code
+========================================================== */
+
+.ai-output-text code {
+  background: #1d2430;
+
+  border: 1px solid var(--ai-border);
+
+  padding: 0.18rem 0.45rem;
+
+  border-radius: 7px;
+
+  font-size: 0.93rem;
+
+  color: #7ee787;
+
+  font-family: Consolas, monospace;
+}
+
+/* ==========================================================
+   Code Block
+========================================================== */
+
+.ai-output-text pre {
+  background: #11161d;
+
+  border: 1px solid var(--ai-border);
+
+  border-radius: 14px;
+
+  padding: 22px;
+
+  overflow-x: auto;
+
+  margin: 1.7rem 0;
+}
+
+.ai-output-text pre code {
+  background: none;
+
+  border: none;
+
+  color: #7ee787;
+
+  padding: 0;
+}
+
+/* ==========================================================
+   Blockquote
+========================================================== */
+
+.ai-output-text blockquote {
+  border-left: 5px solid var(--ai-primary);
+
+  padding-left: 20px;
+
+  margin: 1.5rem 0;
+
+  color: #a7b3c2;
+
+  font-style: italic;
+}
+
+/* ==========================================================
+   Horizontal Rule
+========================================================== */
+
+.ai-output-text hr {
+  border: none;
+
+  border-top: 1px solid var(--ai-border);
+
+  margin: 2rem 0;
+}
+
+/* ==========================================================
+   Tables
+========================================================== */
+
+.ai-output-text table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  margin: 2rem 0;
+}
+
+.ai-output-text th {
+  background: #161b22;
+
+  color: white;
+
+  padding: 14px;
+
+  border: 1px solid var(--ai-border);
+
+  font-weight: 600;
+}
+
+.ai-output-text td {
+  padding: 14px;
+
+  border: 1px solid var(--ai-border);
+}
+
+.ai-output-text tr:nth-child(even) {
+  background: #131923;
+}
+
+/* ==========================================================
+   Images
+========================================================== */
+
+.ai-output-text img {
+  max-width: 100%;
+
+  border-radius: 14px;
+
+  margin: 20px auto;
+
+  display: block;
+}
+
+/* ==========================================================
+   Toolbar
+========================================================== */
+
+.ai-toolbar {
+  margin-top: 35px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid var(--ai-border);
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 20px;
+}
+
+/* ==========================================================
+   Metadata
+========================================================== */
+
+.ai-metadata {
+  color: var(--ai-muted);
+
+  font-size: 0.9rem;
+
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+}
+
+.ai-cached-badge {
+  color: #3fb950;
+
+  font-weight: 600;
+}
+
+/* ==========================================================
+   Action Buttons
+========================================================== */
+
+.ai-actions {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+}
+
+.btn-icon-action {
+  background: transparent;
+
+  border: 1px solid var(--ai-border);
+
+  color: var(--ai-text);
+
+  border-radius: 10px;
+
+  padding: 9px 15px;
+
+  transition: 0.25s;
+
+  cursor: pointer;
+}
+
+.btn-icon-action:hover:not(:disabled) {
+  background: #1d2430;
+
+  color: white;
+
+  border-color: var(--ai-primary);
+}
+
+.btn-icon-action:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   Toast
+========================================================== */
+
+.toast {
+  border-radius: 12px;
+}
+
+/* ==========================================================
+   Scrollbar
+========================================================== */
+
+.ai-output-text::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ai-output-text::-webkit-scrollbar-thumb {
+  background: #3a4554;
+
+  border-radius: 20px;
+}
+
+/* ==========================================================
+   Selection
+========================================================== */
+
+.ai-output-text ::selection {
+  background: #20C7B755;
+}
+
+
+/* ==========================================================
+   Large Screens
+========================================================== */
+
+@media (min-width: 1700px) {
+  .ai-output-text {
+    max-width: 1350px;
+
+    font-size: 1.12rem;
+  }
+}
+
+/* ==========================================================
+   Tablets
+========================================================== */
+
+@media (max-width: 992px) {
+  .ai-toolbar {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .ai-actions {
+    width: 100%;
+
+    justify-content: flex-end;
+  }
+}
+
+/* ==========================================================
+   Phones
+========================================================== */
+
+@media (max-width: 768px) {
+  .ai-output-text {
+    font-size: 1rem;
+
+    line-height: 1.7;
+  }
+
+  .ai-output-text table {
+    display: block;
+
+    overflow-x: auto;
+  }
+
+  .ai-output-text pre {
+    padding: 16px;
+  }
+
+  .ai-toolbar {
+    gap: 15px;
+  }
+}
+
+
+

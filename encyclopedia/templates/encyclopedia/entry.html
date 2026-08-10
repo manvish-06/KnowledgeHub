@@ -1,0 +1,298 @@
+{% extends "encyclopedia/base.html" %}
+
+{% block title %}
+{{ entry.title }} | KnowledgeHub
+{% endblock %}
+
+{% block body %}
+
+<div class="article-container">
+
+    <!-- ========================= -->
+    <!-- Article Header -->
+    <!-- ========================= -->
+
+    <div class="article-header fade-up">
+
+        {% if entry.featured %}
+            <span class="badge badge-featured mb-3">
+                ⭐ Featured Article
+            </span>
+        {% endif %}
+
+        <h1 class="article-title">
+            {{ entry.title }}
+        </h1>
+
+        {% if entry.summary %}
+        <p class="article-summary">
+            {{ entry.summary }}
+        </p>
+        {% endif %}
+
+        <div class="article-info">
+
+            <span>
+                <i class="bi bi-person-circle"></i>
+                <a href="{% url 'author_profile' entry.author.username %}">
+                    {{ entry.author.username }}
+                </a>
+            </span>
+
+            <span>
+                <i class="bi bi-calendar-event"></i>
+                {{ entry.created_at|date:"M d, Y" }}
+            </span>
+
+            <span>
+                <i class="bi bi-eye"></i>
+                {{ entry.views }} Views
+            </span>
+
+            <span>
+                <i class="bi bi-clock"></i>
+                {{ entry.reading_time }} min read
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- Categories -->
+    <!-- ========================= -->
+
+    {% if entry.categories.all %}
+    <div class="mb-4">
+        {% for category in entry.categories.all %}
+            <span class="category-pill">
+                {{ category.name }}
+            </span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- Tags -->
+    <!-- ========================= -->
+
+    {% if entry.tags.all %}
+    <div class="mb-5">
+        {% for tag in entry.tags.all %}
+            <span class="tag">
+                #{{ tag.name }}
+            </span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- Content -->
+    <!-- ========================= -->
+
+    <div class="article-content">
+        {{ content|safe|linebreaks }}
+    </div>
+
+    <!-- ========================= -->
+    <!-- Buttons -->
+    <!-- ========================= -->
+
+    <div class="article-actions">
+
+        <!-- AI Summary Button Added Here -->
+        <a href="{% url 'ai_assistant' entry.title %}" class="btn btn-primary">
+            🤖 AI Workspace
+        </a>
+
+        <button class="btn btn-outline-light copy-link">
+            <i class="bi bi-link-45deg"></i>
+            Copy Link
+        </button>
+
+        {% if user == entry.author or user.is_superuser %}
+            <a href="{% url 'edit' entry.title %}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i>
+                Edit Article
+            </a>
+        {% endif %}
+
+        <a href="{% url 'index' %}" class="btn btn-outline-light">
+            <i class="bi bi-house"></i>
+            Home
+        </a>
+
+        <a href="{% url 'random_page' %}" class="btn btn-outline-light">
+            <i class="bi bi-shuffle"></i>
+            Random Article
+        </a>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- Divider -->
+    <!-- ========================= -->
+
+    <hr class="my-5">
+
+    <!-- ========================= -->
+    <!-- Comments -->
+    <!-- ========================= -->
+
+    <section class="comments">
+
+        <h2 class="mb-4">
+            💬 Comments ({{ page_obj.paginator.count }})
+        </h2>
+
+        {% if page_obj.object_list %}
+
+            {% for comment in page_obj %}
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div>
+                            <div class="comment-author">
+                                <i class="bi bi-person-circle"></i>
+                                <a href="{% url 'author_profile' comment.author.username %}">
+                                    {{ comment.author.username }}
+                                </a>
+                            </div>
+                            <div class="comment-date">
+                                {{ comment.created_at|date:"M d, Y • h:i A" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comment-body">
+                        {{ comment.content|linebreaks }}
+                    </div>
+
+                    {% if user == comment.author or user.is_superuser %}
+                    <div class="comment-actions">
+                        <a href="{% url 'edit_comment' comment.id %}" class="btn btn-sm btn-outline-light">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit
+                        </a>
+                        <a href="{% url 'delete_comment' comment.id %}" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Delete
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-state">
+                <i class="bi bi-chat-dots"></i>
+                <h3>No Comments Yet</h3>
+                <p>Be the first person to share your thoughts on this article.</p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- Pagination -->
+    <!-- ====================================== -->
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- ====================================== -->
+    <!-- Comment Form -->
+    <!-- ====================================== -->
+
+    <section class="comment-form mt-5">
+
+        <h3 class="mb-4">Leave a Comment</h3>
+
+        {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Share your thoughts
+                    </label>
+                    
+                    {{ form.content }}
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">
+                            Keep your comment respectful.
+                        </small>
+                        <small class="text-muted" id="commentCounter">
+                            0 / 1000
+                        </small>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary px-4 py-2">
+                    <i class="bi bi-send-fill me-2"></i>
+                    Post Comment
+                </button>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-circle"></i>
+                You need to <a href="{% url 'login' %}">login</a> before posting a comment.
+            </div>
+        {% endif %}
+
+    </section>
+
+</div>
+
+<script>
+const textarea = document.querySelector("textarea");
+const counter = document.getElementById("commentCounter");
+
+if(textarea){
+    textarea.addEventListener("input", () => {
+        counter.innerHTML = `${textarea.value.length} / 1000`;
+    });
+}
+</script>
+
+{% endblock %}
+
+
+

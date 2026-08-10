@@ -1,0 +1,231 @@
+{% extends "encyclopedia/base.html" %} 
+{% block title %} Search | KnowledgeHub {% endblock %} 
+
+{% block body %}
+
+<div class="container py-5">
+  <!-- ================================= -->
+  <!-- Search Header -->
+  <!-- ================================= -->
+
+  <div class="text-center mb-5 fade-up">
+    <h1 class="display-4 fw-bold">Search Results</h1>
+    <p class="lead text-muted">
+      Results for <strong>"{{ query }}"</strong>
+    </p>
+  </div>
+
+  <!-- ================================= -->
+  <!-- Search Form -->
+  <!-- ================================= -->
+
+  <form method="GET" action="{% url 'search' %}" class="hero-search mb-5">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <input
+        type="text"
+        name="q"
+        class="form-control"
+        value="{{ query }}"
+        placeholder="Search KnowledgeHub and Wikipedia..."
+      />
+      <button class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <!-- ================================= -->
+  <!-- KnowledgeHub Results -->
+  <!-- ================================= -->
+
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2>
+          <i class="bi bi-journal-bookmark-fill text-primary"></i>
+          KnowledgeHub
+        </h2>
+        <p class="text-muted mb-0">
+          Articles already available inside KnowledgeHub.
+        </p>
+      </div>
+      <span class="badge bg-primary rounded-pill">
+        {{ results|length }} Result{{ results|length|pluralize }}
+      </span>
+    </div>
+
+    {% if results %}
+    <div class="row g-4">
+      {% for article in results %}
+      <div class="col-lg-6">
+        <div class="article-card h-100">
+          <div class="article-card-body">
+            {% if article.featured %}
+            <span class="badge badge-featured mb-3"> ⭐ Featured </span>
+            {% endif %}
+
+            <h3>
+              <a href="{% url 'entry' article.title %}">
+                {{ article.title }}
+              </a>
+            </h3>
+
+            {% if article.summary %}
+            <p>{{ article.summary|truncatewords:40 }}</p>
+            {% else %}
+            <p>{{ article.content|truncatewords:40 }}</p>
+            {% endif %}
+
+            <div class="article-meta">
+              <span>
+                <i class="bi bi-person-circle"></i>
+                {{ article.author.username }}
+              </span>
+              <span>
+                <i class="bi bi-eye"></i>
+                {{ article.views }}
+              </span>
+              <span>
+                <i class="bi bi-clock"></i>
+                {{ article.reading_time }} min
+              </span>
+            </div>
+          </div>
+
+          <div class="article-card-footer d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+              {{ article.created_at|date:"M d, Y" }}
+            </small>
+
+            <div class="d-flex gap-2">
+              <a href="{% url 'ai_assistant' article.title %}" class="btn btn-warning btn-sm text-dark">
+                <i class="bi bi-stars"></i> AI Assistant
+              </a>
+              <a href="{% url 'entry' article.title %}" class="btn btn-primary btn-sm">
+                Read Article
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-secondary shadow-custom">
+      <i class="bi bi-search me-2"></i>
+      No matching articles were found inside KnowledgeHub.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ================================= -->
+  <!-- Wikipedia Suggestions -->
+  <!-- ================================= -->
+
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2>
+          <i class="bi bi-globe-americas text-success"></i>
+          Wikipedia Suggestions
+        </h2>
+        <p class="text-muted mb-0">
+          Articles discovered from Wikipedia that are not yet part of KnowledgeHub.
+        </p>
+      </div>
+      <span class="badge bg-success rounded-pill">
+        {{ wikipedia_results|length }} Result{{ wikipedia_results|length|pluralize }}
+      </span>
+    </div>
+
+    {% if wikipedia_results %}
+    <div class="row g-4">
+      {% for article in wikipedia_results %}
+      <div class="col-lg-6">
+        <div class="article-card h-100">
+          {% if article.image %}
+          <img
+              src="{{ article.image }}"
+              class="img-fluid rounded-top wikipedia-image"
+              alt="{{ article.title }}"
+          />
+
+          {% endif %}
+
+          <div class="article-card-body">
+            <span class="badge bg-success mb-3">
+              <i class="bi bi-globe-americas"></i> Wikipedia
+            </span>
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.summary|truncatewords:45 }}</p>
+          </div>
+
+          <div class="article-card-footer">
+            <div class="d-flex flex-wrap gap-2">
+              <a href="{{ article.url }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-box-arrow-up-right"></i> Read
+              </a>
+
+              {% if user.is_authenticated %}
+              <form method="POST" action="{% url 'import_wikipedia' %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="title" value="{{ article.title }}" />
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-download"></i> Import
+                </button>
+              </form>
+              {% endif %}
+
+              <!-- FIXED: Changed disabled <button> to active <a> link -->
+              <a href="{% url 'ai_assistant' article.title %}" class="btn btn-warning text-dark">
+                <i class="bi bi-stars"></i> AI Assistant
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-secondary shadow-custom">
+      <i class="bi bi-globe-americas me-2"></i>
+      No matching Wikipedia articles were found.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ================================= -->
+  <!-- Quick Actions -->
+  <!-- ================================= -->
+
+  <div class="text-center mt-5">
+    <hr class="mb-5" />
+    <h3 class="fw-bold mb-3">Didn't find exactly what you were looking for?</h3>
+    <p class="text-muted mb-4">
+      Search again, explore Wikipedia, or create your own article for the community.
+    </p>
+
+    <div class="d-flex justify-content-center flex-wrap gap-3">
+      <a href="{% url 'index' %}" class="btn btn-outline-light btn-lg">
+        <i class="bi bi-house-fill me-2"></i> Back Home
+      </a>
+
+      {% if user.is_authenticated %}
+      <a href="{% url 'create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle-fill me-2"></i> Create New Article
+      </a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Login to Create
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+

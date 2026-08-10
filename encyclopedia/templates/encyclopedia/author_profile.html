@@ -1,0 +1,488 @@
+{% extends "encyclopedia/base.html" %}
+
+{% block title %}
+{{ author.username }} | KnowledgeHub
+{% endblock %}
+
+{% block body %}
+
+<div class="container py-5">
+
+    <!-- ================================= -->
+    <!-- PROFILE HERO -->
+    <!-- ================================= -->
+
+    <div class="profile-header shadow-custom mb-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-3 text-center">
+
+                <div class="profile-avatar mx-auto">
+
+                    {{ author.username|first|upper }}
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-9">
+
+                <span class="badge bg-primary mb-3">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    KnowledgeHub Author
+
+                </span>
+
+                <h1 class="profile-name">
+
+                    {{ author.username }}
+
+                </h1>
+
+                <p class="lead text-muted">
+
+                    Passionate about sharing knowledge and creating
+                    high-quality articles for the KnowledgeHub community.
+
+                </p>
+
+                <div class="profile-meta">
+
+                    <span>
+
+                        <i class="bi bi-calendar-check"></i>
+
+                        Community Member
+
+                    </span>
+
+                    <span>
+
+                        <i class="bi bi-pencil-square"></i>
+
+                        Active Writer
+
+                    </span>
+
+                    <span>
+
+                        <i class="bi bi-stars"></i>
+
+                        Knowledge Creator
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================= -->
+    <!-- STATISTICS -->
+    <!-- ================================= -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-journal-richtext"></i>
+
+                <h2>
+
+                    {{ author.total_entries }}
+
+                </h2>
+
+                <p>
+
+                    Articles Published
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-eye-fill"></i>
+
+                <h2>
+
+                    {{ author.total_views|default:0 }}
+
+                </h2>
+
+                <p>
+
+                    Total Views
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <i class="bi bi-award-fill"></i>
+
+                <h2>
+
+                    {% if author.total_entries >= 10 %}
+
+                        Pro
+
+                    {% elif author.total_entries >= 5 %}
+
+                        Rising
+
+                    {% else %}
+
+                        New
+
+                    {% endif %}
+
+                </h2>
+
+                <p>
+
+                    Author Rank
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================= -->
+    <!-- ABOUT -->
+    <!-- ================================= -->
+
+    <div class="card mb-5">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-person-lines-fill"></i>
+
+                About
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <p>
+
+                Welcome to
+
+                <strong>{{ author.username }}</strong>'s profile.
+
+                This author has contributed
+
+                <strong>{{ author.total_entries }}</strong>
+
+                article{{ author.total_entries|pluralize }}
+
+                to KnowledgeHub and has accumulated
+
+                <strong>{{ author.total_views|default:0 }}</strong>
+
+                total view{{ author.total_views|pluralize }}.
+
+            </p>
+
+            <p class="mb-0">
+
+                Continue exploring the articles below to discover
+                tutorials, guides, and knowledge shared by this author.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- ================================= -->
+    <!-- ARTICLES -->
+    <!-- ================================= -->
+
+    <div class="row g-4">
+
+            {% if articles %}
+
+        {% for article in articles %}
+
+        <div class="col-lg-6">
+
+            <div class="article-card h-100">
+
+                <div class="article-card-body">
+
+                    {% if article.featured %}
+
+                        <span class="badge badge-featured mb-3">
+
+                            ⭐ Featured
+
+                        </span>
+
+                    {% endif %}
+
+                    <h3>
+
+                        <a href="{% url 'entry' article.title %}">
+
+                            {{ article.title }}
+
+                        </a>
+
+                    </h3>
+
+                    {% if article.summary %}
+
+                        <p>
+
+                            {{ article.summary|truncatewords:30 }}
+
+                        </p>
+
+                    {% else %}
+
+                        <p>
+
+                            {{ article.content|truncatewords:30 }}
+
+                        </p>
+
+                    {% endif %}
+
+                    <div class="article-meta">
+
+                        <span>
+
+                            <i class="bi bi-eye-fill"></i>
+
+                            {{ article.views }}
+
+                            Views
+
+                        </span>
+
+                        <span>
+
+                            <i class="bi bi-clock-fill"></i>
+
+                            {{ article.reading_time }}
+
+                            min read
+
+                        </span>
+
+                        <span>
+
+                            <i class="bi bi-calendar-event"></i>
+
+                            {{ article.created_at|date:"M d, Y" }}
+
+                        </span>
+
+                    </div>
+
+                    <!-- Categories -->
+
+                    {% if article.categories.all %}
+
+                    <div class="mt-4">
+
+                        {% for category in article.categories.all %}
+
+                            <span class="category-pill">
+
+                                {{ category.name }}
+
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+                    <!-- Tags -->
+
+                    {% if article.tags.all %}
+
+                    <div class="mt-3">
+
+                        {% for tag in article.tags.all %}
+
+                            <span class="tag">
+
+                                #{{ tag.name }}
+
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="article-card-footer d-flex justify-content-between align-items-center">
+
+                    <a href="{% url 'entry' article.title %}"
+
+                       class="btn btn-primary">
+
+                        Read Article
+
+                    </a>
+
+                    {% if request.user == author %}
+
+                        <a href="{% url 'edit' article.slug %}"
+
+                           class="btn btn-outline-light">
+
+                            Edit
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <i class="bi bi-journal-x"></i>
+
+                <h2>
+
+                    No Articles Published Yet
+
+                </h2>
+
+                <p>
+
+                    {{ author.username }}
+
+                    hasn't published any articles yet.
+
+                </p>
+
+                {% if request.user == author %}
+
+                    <a href="{% url 'create' %}"
+
+                       class="btn btn-primary mt-3">
+
+                        <i class="bi bi-plus-circle-fill"></i>
+
+                        Publish Your First Article
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    </div>
+
+    <!-- ================================= -->
+    <!-- FOOTER CTA -->
+    <!-- ================================= -->
+
+    <div class="card mt-5 shadow-custom border-0">
+
+        <div class="card-body text-center py-5">
+
+            <div class="display-4 mb-3">
+
+                📚
+
+            </div>
+
+            <h2 class="fw-bold">
+
+                Explore More Knowledge
+
+            </h2>
+
+            <p class="text-muted">
+
+                Discover more articles from talented authors in the
+                KnowledgeHub community.
+
+            </p>
+
+            <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
+
+                <a href="{% url 'index' %}"
+
+                   class="btn btn-primary btn-lg">
+
+                    <i class="bi bi-house-door-fill me-2"></i>
+
+                    Browse Articles
+
+                </a>
+
+                {% if request.user != author %}
+
+                <a href="{% url 'random_page' %}"
+
+                   class="btn btn-outline-light btn-lg">
+
+                    <i class="bi bi-shuffle me-2"></i>
+
+                    Random Article
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+

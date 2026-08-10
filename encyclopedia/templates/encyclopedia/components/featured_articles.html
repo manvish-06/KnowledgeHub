@@ -1,0 +1,98 @@
+<section class="section">
+
+<div class="container">
+
+<h2 class="section-title">
+
+⭐ Featured Articles
+
+</h2>
+
+<div class="row g-4">
+
+{% for article in featured_articles %}
+
+<div class="col-lg-4">
+
+<div class="article-card">
+
+<span class="badge bg-warning text-dark">
+
+Featured
+
+</span>
+
+<h3 class="mt-3">
+
+{{ article.title }}
+
+</h3>
+
+<p>
+
+{{ article.summary|default:"No summary available."|truncatewords:20 }}
+
+</p>
+
+<div class="article-meta">
+
+<span>
+
+<i class="bi bi-person"></i>
+
+{{ article.author.username }}
+
+</span>
+
+<span>
+
+<i class="bi bi-eye"></i>
+
+{{ article.views }}
+
+</span>
+
+<span>
+
+<i class="bi bi-clock"></i>
+
+{{ article.reading_time }} min
+
+</span>
+
+</div>
+
+<a
+
+href="{% url 'entry' article.title %}"
+
+class="btn btn-primary mt-4">
+
+Read Article
+
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="col-12">
+
+<div class="card p-5 text-center">
+
+No featured articles yet.
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+

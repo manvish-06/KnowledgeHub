@@ -1,0 +1,36 @@
+<section class="section">
+
+<div class="container">
+
+<h2 class="section-title">
+
+Browse Categories
+
+</h2>
+
+<div class="category-list">
+
+{% for category in categories %}
+
+<span class="category-pill">
+
+{{ category.name }}
+
+</span>
+
+{% empty %}
+
+<p>
+
+No categories available.
+
+</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+

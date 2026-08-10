@@ -1,0 +1,235 @@
+{% extends "encyclopedia/base.html" %} {% block title %} Edit Article |
+KnowledgeHub {% endblock %} {% block body %}
+
+<section class="section py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-11">
+        <div class="card shadow-custom article-editor-card">
+          <div class="card-header text-center py-5">
+            <div class="editor-icon mb-3">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+
+            <h1 class="fw-bold mb-3">Edit Article</h1>
+
+            <p class="text-muted mb-0">
+              Update your article and keep it fresh for your readers.
+            </p>
+          </div>
+
+          <div class="card-body p-5">
+            {% if form.errors %}
+
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+              Please correct the errors below.
+            </div>
+
+            {% endif %}
+
+            <form method="POST">
+              {% csrf_token %}
+
+              <!-- ========================= -->
+              <!-- Title -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-4">
+                <label class="form-label fw-semibold">
+                  {{ form.title.label }}
+                </label>
+
+                {{ form.title }} {% for error in form.title.errors %}
+
+                <div class="text-danger mt-2">{{ error }}</div>
+
+                {% endfor %}
+              </div>
+
+              <!-- ========================= -->
+              <!-- Summary -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-4">
+                <label class="form-label fw-semibold">
+                  {{ form.summary.label }}
+                </label>
+
+                {{ form.summary }}
+
+                <div class="form-text">
+                  A concise overview that appears before the article.
+                </div>
+
+                {% for error in form.summary.errors %}
+
+                <div class="text-danger mt-2">{{ error }}</div>
+
+                {% endfor %}
+              </div>
+
+              <!-- ========================= -->
+              <!-- Content -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold">
+                  {{ form.content.label }}
+                </label>
+
+                {{ form.content }}
+
+                <div class="editor-footer mt-3">
+                  <div>
+                    <small>
+                      <i class="bi bi-markdown me-1"></i>
+
+                      Markdown supported
+                    </small>
+                  </div>
+
+                  <div class="editor-stats">
+                    <small id="wordCounter"> 0 words </small>
+
+                    <small id="readingTime"> 0 min read </small>
+
+                    <small id="editorCounter"> 0 characters </small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Categories -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Categories </label>
+
+                <div class="chip-container">
+                  {% for checkbox in form.categories %}
+
+                  <label class="chip">
+                    {{ checkbox.tag }}
+
+                    <span>{{ checkbox.choice_label }}</span>
+                  </label>
+
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Tags -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Tags </label>
+
+                <div class="chip-container">
+                  {% for checkbox in form.tags %}
+
+                  <label class="chip">
+                    {{ checkbox.tag }}
+
+                    <span>{{ checkbox.choice_label }}</span>
+                  </label>
+
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- ========================= -->
+              <!-- Featured -->
+              <!-- ========================= -->
+
+              <div class="editor-field mb-5">
+                <label class="form-label fw-semibold"> Featured Article </label>
+
+                <div class="featured-card">
+                  <div class="featured-left">
+                    <div class="featured-icon">
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+
+                    <div>
+                      <h6 class="mb-1">Feature this article</h6>
+
+                      <small class="text-muted">
+                        Featured articles appear first on the homepage.
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="featured-right">{{ form.featured }}</div>
+                </div>
+              </div>
+
+              <hr class="my-5" />
+
+              <div
+                class="d-flex justify-content-between align-items-center flex-wrap gap-3"
+              >
+                <a
+                  href="{% url 'entry' entry.title %}"
+                  class="btn btn-outline-light px-4"
+                >
+                  <i class="bi bi-arrow-left me-2"></i>
+
+                  Cancel
+                </a>
+
+                <button type="submit" class="btn btn-success px-5">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const textarea = document.querySelector("#id_content");
+
+    const counter = document.getElementById("editorCounter");
+
+    const words = document.getElementById("wordCounter");
+
+    const reading = document.getElementById("readingTime");
+
+    if (!textarea) return;
+
+    function updateStats() {
+      const text = textarea.value;
+
+      const characters = text.length;
+
+      const wordCount = text.trim().length
+        ? text.trim().split(/\s+/).length
+        : 0;
+
+      const read = Math.max(1, Math.ceil(wordCount / 200));
+
+      if (counter) counter.textContent = `${characters} characters`;
+
+      if (words) words.textContent = `${wordCount} words`;
+
+      if (reading) reading.textContent = `${read} min read`;
+    }
+
+    textarea.addEventListener("input", updateStats);
+
+    updateStats();
+  });
+</script>
+
+{% endblock %}
+
+

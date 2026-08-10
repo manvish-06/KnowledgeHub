@@ -1,0 +1,510 @@
+{% extends "encyclopedia/base.html" %}
+
+{% block title %}
+Dashboard | KnowledgeHub
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- ================================= -->
+    <!-- Dashboard Header -->
+    <!-- ================================= -->
+
+    <div class="dashboard-header fade-up">
+
+        <h1 class="dashboard-title">
+
+            Welcome,
+
+            {{ user.username }}
+
+            👋
+
+        </h1>
+
+        <p class="dashboard-subtitle">
+
+            Manage your articles, monitor your statistics and track your community engagement.
+
+        </p>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Statistics -->
+    <!-- ================================= -->
+
+    <div class="dashboard-grid mb-5">
+
+        <div class="stat-card">
+
+            <i class="bi bi-journal-text"></i>
+
+            <h2>
+
+                {{ total_articles }}
+
+            </h2>
+
+            <p>
+
+                Articles
+
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="bi bi-chat-dots"></i>
+
+            <h2>
+
+                {{ total_comments }}
+
+            </h2>
+
+            <p>
+
+                Comments
+
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="bi bi-eye"></i>
+
+            <h2>
+
+                {{ total_views }}
+
+            </h2>
+
+            <p>
+
+                Total Views
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Quick Actions -->
+    <!-- ================================= -->
+
+    <div class="quick-actions mb-5">
+
+        <a
+            href="{% url 'create' %}"
+            class="btn btn-primary">
+
+            <i class="bi bi-plus-circle"></i>
+
+            New Article
+
+        </a>
+
+        <a
+            href="{% url 'index' %}"
+            class="btn btn-outline-light">
+
+            <i class="bi bi-house"></i>
+
+            Home
+
+        </a>
+
+        <a
+            href="{% url 'random_page' %}"
+            class="btn btn-outline-light">
+
+            <i class="bi bi-shuffle"></i>
+
+            Random Article
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Most Viewed -->
+    <!-- ================================= -->
+
+    {% if most_viewed %}
+
+    <div class="card mb-5">
+
+        <div class="card-header">
+
+            ⭐ Most Viewed Article
+
+        </div>
+
+        <div class="card-body">
+
+            <h3>
+
+                <a href="{% url 'entry' most_viewed.title %}">
+
+                    {{ most_viewed.title }}
+
+                </a>
+
+            </h3>
+
+            <p>
+
+                {{ most_viewed.summary }}
+
+            </p>
+
+            <div class="article-meta">
+
+                <span>
+
+                    <i class="bi bi-eye"></i>
+
+                    {{ most_viewed.views }} Views
+
+                </span>
+
+                <span>
+
+                    <i class="bi bi-calendar"></i>
+
+                    {{ most_viewed.created_at|date:"M d, Y" }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+        <!-- ================================= -->
+    <!-- Recent Articles -->
+    <!-- ================================= -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-lg-8">
+
+            <div class="card h-100">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h4 class="mb-0">
+
+                        <i class="bi bi-clock-history"></i>
+
+                        Recent Articles
+
+                    </h4>
+
+                    <span class="badge bg-primary">
+
+                        {{ recent_articles|length }}
+
+                    </span>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if recent_articles %}
+
+                        <div class="list-group list-group-flush">
+
+                            {% for article in recent_articles %}
+
+                                <div class="py-3 border-bottom">
+
+                                    <div class="d-flex justify-content-between align-items-start">
+
+                                        <div>
+
+                                            <h5 class="mb-2">
+
+                                                <a href="{% url 'entry' article.title %}">
+
+                                                    {{ article.title }}
+
+                                                </a>
+
+                                            </h5>
+
+                                            <small class="text-muted">
+
+                                                <i class="bi bi-calendar3"></i>
+
+                                                {{ article.created_at|date:"M d, Y" }}
+
+                                            </small>
+
+                                        </div>
+
+                                        <span class="badge bg-secondary">
+
+                                            {{ article.views }}
+
+                                            Views
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="empty-state">
+
+                            <i class="bi bi-journal-x"></i>
+
+                            <h4>
+
+                                No Articles Yet
+
+                            </h4>
+
+                            <p>
+
+                                Create your first KnowledgeHub article.
+
+                            </p>
+
+                            <a
+                                href="{% url 'create' %}"
+                                class="btn btn-primary mt-3">
+
+                                Create Article
+
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- Top Viewed Articles -->
+        <!-- ================================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card h-100">
+
+                <div class="card-header">
+
+                    <h4 class="mb-0">
+
+                        🔥 Top Viewed
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if top_articles %}
+
+                        <ul class="activity-list">
+
+                            {% for article in top_articles %}
+
+                                <li class="activity-item">
+
+                                    <div class="activity-icon">
+
+                                        <i class="bi bi-fire"></i>
+
+                                    </div>
+
+                                    <div class="activity-content">
+
+                                        <strong>
+
+                                            <a href="{% url 'entry' article.title %}">
+
+                                                {{ article.title }}
+
+                                            </a>
+
+                                        </strong>
+
+                                        <br>
+
+                                        <small class="activity-time">
+
+                                            {{ article.views }}
+
+                                            Views
+
+                                        </small>
+
+                                    </div>
+
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No articles available.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Recent Comments -->
+    <!-- ================================= -->
+
+    <div class="card mb-5">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-chat-left-text"></i>
+
+                Your Recent Comments
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if recent_comments %}
+
+                <ul class="activity-list">
+
+                    {% for comment in recent_comments %}
+
+                        <li class="activity-item">
+
+                            <div class="activity-icon">
+
+                                <i class="bi bi-chat"></i>
+
+                            </div>
+
+                            <div class="activity-content">
+
+                                <strong>
+
+                                    <a href="{% url 'entry' comment.entry.title %}">
+
+                                        {{ comment.entry.title }}
+
+                                    </a>
+
+                                </strong>
+
+                                <p class="mb-1">
+
+                                    {{ comment.content|truncatewords:18 }}
+
+                                </p>
+
+                                <small class="activity-time">
+
+                                    {{ comment.created_at|date:"M d, Y h:i A" }}
+
+                                </small>
+
+                            </div>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <i class="bi bi-chat-square-text"></i>
+
+                    <h4>
+
+                        No Comments Yet
+
+                    </h4>
+
+                    <p>
+
+                        Participate in discussions to see your comments here.
+
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Dashboard Footer -->
+    <!-- ================================= -->
+
+    <div class="text-center mt-5">
+
+        <a
+            href="{% url 'create' %}"
+            class="btn btn-primary btn-lg">
+
+            <i class="bi bi-plus-circle"></i>
+
+            Write Another Article
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

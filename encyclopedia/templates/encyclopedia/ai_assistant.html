@@ -1,0 +1,168 @@
+{% extends "encyclopedia/base.html" %}
+{% load static %}
+
+{% block title %}AI Workspace | {{ article.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'encyclopedia/css/ai_workspace.css' %}">
+{% endblock %}
+
+{% block body %}
+
+<meta id="ai-context" data-article-title="{{ article.title|escapejs }}">
+
+<div class="ai-workspace-container py-5 fade-up">
+    
+    <div class="mb-5 text-light d-flex justify-content-between align-items-end">
+        <div>
+            <h1 class="fw-bold mb-2 d-flex align-items-center gap-3">
+                <span style="font-size: 2.5rem; line-height: 1;">🤖</span> 
+                AI Workspace
+            </h1>
+            <p class="text-muted fs-5 mb-0">
+                AI powered learning tools for <strong class="text-white">{{ article.title }}</strong>
+            </p>
+        </div>
+        <a href="{% url 'entry' article.title %}" class="btn btn-outline-secondary rounded-pill px-4">
+
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div id="ai-features-container">
+        {% for feature_key, feature_data in features.items %}
+            <div class="ai-card" id="card-{{ feature_key }}" data-feature="{{ feature_key }}" data-ai-url="{% url 'ai_feature' title=article.title feature=feature_key %}" tabindex="0">
+                
+                <div class="ai-card-header">
+                    <div class="ai-card-title-group">
+                        <i class="bi bi-chevron-down collapse-icon"></i>
+                        <!-- <i class="bi {{ feature_data.icon }} text-primary fs-5"></i> -->
+                         <i class="bi {{ feature_data.icon }} fs-5" style="color: var(--ai-primary);"></i>
+                        <h3 class="ai-card-title">{{ feature_data.title }}</h3>
+                    </div>
+                    
+                    <div class="action-wrapper d-flex align-items-center gap-3" onclick="event.stopPropagation();">
+                        {% if feature_data.supports_difficulty %}
+                        <select class="form-select form-select-sm ai-difficulty-select">
+                            <option value="standard" selected>Standard</option>
+                            <option value="easy">Easy (Beginner)</option>
+                            <option value="advanced">Advanced (Expert)</option>
+                        </select>
+                        {% endif %}
+                        <button class="btn btn-ai btn-trigger">Generate</button>
+                    </div>
+                </div>
+
+                <div class="ai-card-body" aria-live="polite">
+                    {% if feature_key == "chat" %}
+                    <div class="chat-area mb-4">
+
+                        <label class="form-label text-light fw-semibold">
+                            Ask anything about this article
+                        </label>
+
+                        <textarea
+                            class="form-control chat-input"
+                            rows="4"
+                            placeholder="Example: What are the Fundamental Rights mentioned in this article?"
+                        ></textarea>
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <small class="text-muted me-auto">
+                                AI will answer only from the current article.
+                            </small>
+
+                            <button
+                                type="button"
+                                class="btn btn-primary chat-send-btn"
+                            >
+                                <i class="bi bi-send-fill me-2"></i>
+                                Ask
+                            </button>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    <div class="state-loading text-center py-5 d-none">
+                        <div class="spinner-border text-primary mb-3" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+                        <div class="text-muted fw-medium fs-5">Analyzing article content...</div>
+                    </div>
+
+                    <div class="state-error d-none">
+                        <div class="alert alert-danger bg-dark border-danger text-danger d-flex align-items-center gap-3">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                            <span class="error-text flex-grow-1">An error occurred.</span>
+                        </div>
+                    </div>
+
+                    <div class="state-success d-none">
+                        <div class="ai-result-header">
+                            <i class="bi bi-stars text-primary"></i> ✨ Generated with <span class="ai-model-name">{{ model_name|default:"Gemini 2.5 Flash" }}</span>
+                        </div>
+
+                        <div class="ai-output-text transition-opacity"></div>
+                        
+                        <div class="ai-toolbar mt-4 pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                            
+                            <div class="ai-metadata text-muted" style="font-size: 0.85rem;">
+                                <span class="ai-cached-badge d-none text-success"><i class="bi bi-database-check me-1"></i> Cached</span>
+                                <span class="ai-cached-dot d-none">•</span>
+                                <i class="bi bi-stopwatch me-1"></i> <span class="ai-time">0.0s</span>
+                                <span class="ai-token-dot d-none">•</span>
+                                <span class="ai-tokens d-none">0 tokens</span>
+                            </div>
+
+                            <div class="ai-actions d-flex gap-2">
+                                <button
+                                    type="button"
+                                    class="btn-icon-action ai-bookmark-button"
+                                    title="Save to Favorites"
+                                    aria-label="Save AI result to favorites"
+                                >
+                                    <i class="bi bi-bookmark"></i>
+                                </button>
+                                <button
+                                    class="btn-icon-action btn-export-pdf"
+                                    title="Export PDF"
+                                    disabled
+                                    data-pdf-url="{% url 'export_ai_pdf' %}"
+                                >
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </button>
+                                <div class="dropdown">
+                                    <button class="btn-icon-action btn-copy" data-bs-toggle="dropdown" title="Copy Options" disabled>
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                        <li><a class="dropdown-item copy-text disabled" href="#">Plain Text</a></li>
+                                        <li><a class="dropdown-item copy-md disabled" href="#">Markdown</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    <div id="ai-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body fw-medium" id="ai-toast-message">
+                <i class="bi bi-check-circle-fill me-2"></i> Action completed
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'encyclopedia/js/ai_workspace.js' %}"></script>
+{% endblock %}
+
+

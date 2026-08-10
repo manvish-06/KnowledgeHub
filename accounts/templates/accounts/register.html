@@ -1,0 +1,406 @@
+{% extends "encyclopedia/base.html" %}
+
+{% block title %}
+Register | KnowledgeHub
+{% endblock %}
+
+{% block body %}
+
+<div class="auth-page">
+
+    <div class="container">
+
+        <div class="row justify-content-center align-items-center">
+
+            <div class="col-lg-6 col-md-8">
+
+                <div class="auth-card fade-up">
+
+                    <div class="auth-logo">
+
+                        <i class="bi bi-person-plus-fill"></i>
+
+                    </div>
+
+                    <h1 class="auth-title">
+
+                        Join KnowledgeHub
+
+                    </h1>
+
+                    <p class="auth-subtitle">
+
+                        Create your account and start sharing knowledge with the world.
+
+                    </p>
+
+                    {% if message %}
+
+                        <div class="alert alert-danger">
+
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endif %}
+
+                    <form
+                        action="{% url 'register' %}"
+                        method="post">
+
+                        {% csrf_token %}
+
+                        <!-- Username -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Username
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-person"></i>
+
+                                </span>
+
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    name="username"
+                                    placeholder="Choose a username"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Email -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Email Address
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-envelope"></i>
+
+                                </span>
+
+                                <input
+                                    class="form-control"
+                                    type="email"
+                                    name="email"
+                                    placeholder="Enter your email"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Password -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Password
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-lock"></i>
+
+                                </span>
+
+                                <input
+                                    class="form-control"
+                                    id="password1"
+                                    type="password"
+                                    name="password"
+                                    placeholder="Create a password"
+                                    required>
+
+                                <button
+                                    class="btn btn-outline-light"
+                                    type="button"
+                                    id="togglePassword1">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            <small
+                                id="passwordStrength"
+                                class="text-muted">
+
+                                Password Strength:
+                                <span>Weak</span>
+
+                            </small>
+
+                        </div>
+
+                        <!-- Confirm Password -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Confirm Password
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="bi bi-shield-lock"></i>
+
+                                </span>
+
+                                <input
+                                    class="form-control"
+                                    id="password2"
+                                    type="password"
+                                    name="confirmation"
+                                    placeholder="Confirm your password"
+                                    required>
+
+                                <button
+                                    class="btn btn-outline-light"
+                                    type="button"
+                                    id="togglePassword2">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            <small
+                                id="passwordMatch"
+                                class="text-muted">
+
+                            </small>
+
+                        </div>
+
+                        <div class="form-check mb-4">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="terms"
+                                required>
+
+                            <label
+                                class="form-check-label"
+                                for="terms">
+
+                                I agree to the
+                                <a href="#" class="text-primary">
+                                    Terms of Service
+                                </a>
+                                and
+                                <a href="#" class="text-primary">
+                                    Privacy Policy
+                                </a>
+
+                            </label>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-lg w-100 auth-btn">
+
+                            <i class="bi bi-person-plus-fill me-2"></i>
+
+                            Create Account
+
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+
+                        <p class="mb-3 text-muted">
+
+                            Already have an account?
+
+                        </p>
+
+                        <a
+                            href="{% url 'login' %}"
+                            class="btn btn-outline-light w-100">
+
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+
+                            Login Instead
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ==============================
+   Show / Hide Password
+================================ */
+
+function togglePassword(buttonId,inputId){
+
+    const button=document.getElementById(buttonId);
+
+    const input=document.getElementById(inputId);
+
+    if(!button || !input) return;
+
+    button.addEventListener("click",function(){
+
+        if(input.type==="password"){
+
+            input.type="text";
+
+            this.innerHTML='<i class="bi bi-eye-slash"></i>';
+
+        }
+
+        else{
+
+            input.type="password";
+
+            this.innerHTML='<i class="bi bi-eye"></i>';
+
+        }
+
+    });
+
+}
+
+togglePassword("togglePassword1","password1");
+
+togglePassword("togglePassword2","password2");
+
+
+/* ==============================
+   Password Strength
+================================ */
+
+const password=document.getElementById("password1");
+
+const strength=document.querySelector("#passwordStrength span");
+
+password.addEventListener("input",function(){
+
+    let score=0;
+
+    if(this.value.length>=8) score++;
+
+    if(/[A-Z]/.test(this.value)) score++;
+
+    if(/[0-9]/.test(this.value)) score++;
+
+    if(/[^A-Za-z0-9]/.test(this.value)) score++;
+
+    if(score<=1){
+
+        strength.innerHTML="Weak";
+
+        strength.className="text-danger";
+
+    }
+
+    else if(score<=3){
+
+        strength.innerHTML="Medium";
+
+        strength.className="text-warning";
+
+    }
+
+    else{
+
+        strength.innerHTML="Strong";
+
+        strength.className="text-success";
+
+    }
+
+});
+
+
+/* ==============================
+   Password Match
+================================ */
+
+const confirmPassword=document.getElementById("password2");
+
+const match=document.getElementById("passwordMatch");
+
+function checkPasswords(){
+
+    if(confirmPassword.value===""){
+
+        match.innerHTML="";
+
+        return;
+
+    }
+
+    if(password.value===confirmPassword.value){
+
+        match.innerHTML="✓ Passwords match";
+
+        match.className="text-success";
+
+    }
+
+    else{
+
+        match.innerHTML="✗ Passwords do not match";
+
+        match.className="text-danger";
+
+    }
+
+}
+
+password.addEventListener("input",checkPasswords);
+
+confirmPassword.addEventListener("input",checkPasswords);
+
+</script>
+
+{% endblock %}
+
